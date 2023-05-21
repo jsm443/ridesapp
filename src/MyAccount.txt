@@ -1,0 +1,72 @@
+import React, { useState, useContext } from 'react';
+import './MyAccount.css';
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from './AuthContext';
+
+function MyAccount() {
+  const { currentUser } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  if (!currentUser) {
+    return (
+      <div className="myaccount-container">
+        <h1 className="title">You are logged out.  Please Sign in</h1>
+        <button className="sign-in-btn" onClick={() => navigate('/signin')}>Sign In to Find a Ride</button>
+      </div>
+    )
+  }
+  else {
+
+    const name = currentUser.displayName;
+    const [joinCode, setJoinCode] = useState('');
+    const [createCode, setCreateCode] = useState('');
+
+    const handleJoinSubmit = (event) => {
+      event.preventDefault();
+      console.log('Join a ride with code:', joinCode);
+      // handle joining a ride schedule here
+    };
+
+    const handleCreateSubmit = (event) => {
+      event.preventDefault();
+      console.log('Create a ride with code:', createCode);
+      // handle creating a ride schedule here
+    };
+
+    return (
+      <div className="myaccount-container">
+        <h1 className="title">Welcome to your Account {name}</h1>
+
+        <form onSubmit={handleJoinSubmit}>
+          <div className="input-field">
+            <input
+              type="text"
+              placeholder="Enter code to join a ride"
+              value={joinCode}
+              onChange={e => setJoinCode(e.target.value)}
+            />
+          </div>
+          <button className="button" type="submit" disabled={!joinCode.trim()}>
+            Join a Ride
+          </button>
+        </form>
+
+        <form onSubmit={handleCreateSubmit}>
+          <div className="input-field">
+            <input
+              type="text"
+              placeholder="Enter code to create a ride"
+              value={createCode}
+              onChange={e => setCreateCode(e.target.value)}
+            />
+          </div>
+          <button className="button" type="submit" disabled={!createCode.trim()}>
+            Create a Ride
+          </button>
+        </form>
+      </div>
+    );
+  }
+}
+
+export default MyAccount;
