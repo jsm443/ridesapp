@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import { getAuth } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
+import { EmailAuthProvider } from "firebase/auth";
 
 function FirebaseAuth() {
   const navigate = useNavigate();
@@ -22,13 +23,10 @@ function FirebaseAuth() {
   const uiConfig = {
     signInFlow: 'popup',
     signInOptions: [
-      {
-        provider: getAuth.EmailAuthProvider.PROVIDER_ID,
-        requireDisplayName: false
-      }
+      EmailAuthProvider.PROVIDER_ID,
     ],
     callbacks: {
-      signInSuccessWithAuthResult: () => false,
+      signInSuccessWithAuthResult: () => false
     },
   };
 

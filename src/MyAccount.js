@@ -2,16 +2,16 @@ import React, { useState, useContext } from 'react';
 import './MyAccount.css';
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from './AuthContext';
-import { updateProfile, signOut, getAuth } from "firebase/auth";
+import { signOut, getAuth } from "firebase/auth";
+import { Link } from 'react-router-dom';
 
 function MyAccount() {
   const { currentUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [joinCode, setJoinCode] = useState('');
-  const [createCode, setCreateCode] = useState('');
-  const [displayName, setDisplayName] = useState(currentUser ? currentUser.displayName : '');
-  const name = currentUser.displayName;
+  const [displayName] = useState(currentUser ? currentUser.displayName : '');
+  //const name = currentUser.displayName;
 
   const handleJoinSubmit = (event) => {
     event.preventDefault();
@@ -19,22 +19,10 @@ function MyAccount() {
     // handle joining a ride schedule here
   };
 
-  const handleCreateSubmit = (event) => {
-    event.preventDefault();
-    console.log('Create a ride with code:', createCode);
-    // handle creating a ride schedule herejac
-  };
-
   const handleSignOut = async () => {
     const auth = getAuth();
     await signOut(auth);
     navigate('/signin');
-  }
-
-  const handleNameUpdate = async () => {
-    if (currentUser) {
-      await updateProfile(currentUser, { displayName });
-    }
   }
 
   if (!currentUser) {
@@ -48,18 +36,9 @@ function MyAccount() {
   else {
     return (
       <div className="myaccount-container">
-        <h1 className="title">Welcome {name} to your account</h1>
+        <h1 className="title">Welcome {displayName} to your account</h1>
 
-        <div>
-          <input
-            type="text"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-          />
-          <button onClick={handleNameUpdate}>Update Display Name</button>
-        </div>
 
-        <button onClick={handleSignOut}>Sign Out</button>
 
         <form onSubmit={handleJoinSubmit}>
           <div className="input-field">
@@ -75,19 +54,10 @@ function MyAccount() {
           </button>
         </form>
 
-        <form onSubmit={handleCreateSubmit}>
-          <div className="input-field">
-            <input
-              type="text"
-              placeholder="Enter code to create a ride"
-              value={createCode}
-              onChange={e => setCreateCode(e.target.value)}
-            />
-          </div>
-          <button className="button" type="submit" disabled={!createCode.trim()}>
-            Create a Ride
-          </button>
-        </form>
+        <Link to="/createride">Create Ride</Link>
+        <br></br>
+        <Link to="/settings">Settings</Link>
+        <button onClick={handleSignOut}>Sign Out</button>
       </div>
     );
   }
