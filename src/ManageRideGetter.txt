@@ -1,0 +1,82 @@
+import React, { useEffect, useState, useContext } from 'react';
+import { useParams } from 'react-router-dom';
+import { getDatabase, ref, onValue } from 'firebase/database';
+import { AuthContext } from './AuthContext';
+
+
+
+function ManageRide() {
+  const [data, setData] = useState(null);
+  const db = getDatabase();
+  const { currentUser } = useContext(AuthContext);
+  const { id } = useParams();
+
+  useEffect(() => {
+    // const userId = '7og7zq99XmSh3kX91wRAGcZtbbl1'
+    // const rideId = '-NVzlfvpiogZ33Leqr17'
+
+    const userId = currentUser.uid
+    const rideId = id
+    const dataRef = ref(db, 'rides/' + userId + '/' + rideId);
+    const listener = onValue(dataRef, (snapshot) => {
+      const dataValue = snapshot.val();
+      setData(dataValue);
+    }, {
+      onlyOnce: true, // This option ensures the listener is removed after the initial data is received.
+    });
+
+    // Clean up function to remove the listener
+    return () => {
+      dataRef.off('value', listener);
+    };
+  }, [db]);
+
+  // Render
+  return (
+    <div>
+      <h1>Test</h1>
+      <p>Data from Firebase: {JSON.stringify(data)}</p>
+    </div>
+  );
+}
+
+// function ManageRide({ rideId }) {
+//   const [rideData, setRideData] = useState(null);
+
+//   useEffect(() => {
+//     const fetchAndSetRideData = async () => {
+//       const userId = "yourUserId"; // Replace with the correct user ID
+//       const data = await fetchRideById(userId, rideId);
+//       setRideData(data);
+//     };
+
+//     fetchAndSetRideData();
+//   }, [rideId]);
+
+//   // Handle loading state
+//   if (!rideData) {
+//     return <div>Loading...</div>;
+//   }
+
+//   // Render ride data
+//   return (
+//     <div>
+//       <h1>Ride Details</h1>
+//       <h2>Ride Name: {rideData.name}</h2>
+//       <h3>Ride Locations:</h3>
+//       <ul>
+//         {rideData.locations.map((location, index) => (
+//           <li key={index}>{location}</li>
+//         ))}
+//       </ul>
+//       <h3>Ride Slots:</h3>
+//       <ul>
+//         {rideData.rideSlots.map((slot, index) => (
+//           <li key={index}>{slot}</li>
+//         ))}
+//       </ul>
+//     </div>
+//   );
+// }
+
+export default ManageRide;

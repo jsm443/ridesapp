@@ -6,6 +6,7 @@ import SignIn from "./SignIn";
 import Settings from "./Settings"
 import MyAccount from "./MyAccount";
 import CreateRide from "./CreateRide"
+import ManageRide from "./ManageRide"
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/myaccount" element={<MyAccount />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/createride" element={<CreateRide />} />
+          <Route path="/manageride/:id" element={<ManageRide />} />
         </Routes>
       </AuthProvider>
     </Router>

@@ -1,17 +1,18 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import './MyAccount.css';
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from './AuthContext';
 import { signOut, getAuth } from "firebase/auth";
 import { Link } from 'react-router-dom';
+import { getDatabase, ref, onValue } from 'firebase/database';
 
 function MyAccount() {
   const { currentUser } = useContext(AuthContext);
   const navigate = useNavigate();
-
   const [joinCode, setJoinCode] = useState('');
   const [displayName] = useState(currentUser ? currentUser.displayName : '');
-  //const name = currentUser.displayName;
+  const [rides, setRides] = useState({});//for displaying existing rides configurations
+  const db = getDatabase();
 
   const handleJoinSubmit = (event) => {
     event.preventDefault();
@@ -24,6 +25,14 @@ function MyAccount() {
     await signOut(auth);
     navigate('/signin');
   }
+
+  useEffect(() => {//handles displaying the rides
+    const rideRef = ref(db, `rides/${currentUser.uid}`);
+    onValue(rideRef, (snapshot) => {
+      const data = snapshot.val();
+      setRides(data || {});
+    });
+  }, [currentUser.uid]);
 
   if (!currentUser) {
     return (
@@ -53,6 +62,16 @@ function MyAccount() {
             Join a Ride
           </button>
         </form>
+
+        <div className="my-rides">
+          <h2>My Rides</h2>
+          {Object.entries(rides).map(([id, ride]) => (
+            <div key={id}>
+              <Link to={`/manageride/${id}`}>{ride.name}</Link>
+            </div>
+          ))}
+        </div>
+
 
         <Link to="/createride">Create Ride</Link>
         <br></br>
